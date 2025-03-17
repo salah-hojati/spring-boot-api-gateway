@@ -1,0 +1,30 @@
+#Email
+email_host: smtp.gmail.com
+email_port: 587
+email_id: your_email@gmail.com
+email_password: your_password
+verify_host: http://localhost:8085
+
+#Server
+active_profile: prod
+testcontainers_port : 8081
+
+#Database
+database_username: root
+database_password: learn
+database_name: learn
+database_port: 3306
+database_host: localhost
+
+#cache
+expiryDuration: 900
+
+#jwt
+JWT_EXPIRATION: 432_000_000
+JWT_SECRET: awdawd
+
+#redis
+redis_host: localhost
+redis_port: 6379
+redis_password: password
+redis_database: 0
