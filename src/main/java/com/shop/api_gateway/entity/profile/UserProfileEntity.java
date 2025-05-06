@@ -1,6 +1,5 @@
 package com.shop.api_gateway.entity.profile;
 
-import com.shop.api_gateway.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -14,13 +13,9 @@ import java.util.UUID;
 public class UserProfileEntity {
 
     @Id
-    @Column()
+    @Column(unique = true, nullable = false)
     private UUID userId;
 
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
 
     @Column
     private LocalDate birthDate;

@@ -4,22 +4,18 @@ package com.shop.api_gateway.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
 @Entity
 @Table(name = "user_security")
-public class UserSecurityEntity {
+public class UserSecurityEntity implements Serializable {
 
     @Id
-    @Column(columnDefinition = "BINARY(16)")
+    @Column(unique = true, nullable = false)
     private UUID userId;
-
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
 
     @Column(nullable = false)
     private String salt;

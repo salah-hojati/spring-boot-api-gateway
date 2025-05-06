@@ -23,23 +23,12 @@ public class SecurityConfig {
     private final JwtRequestFilter jwtRequestFilter;
 
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        return http
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(request ->
-//                        request.requestMatchers("/user/**").permitAll()
-//                                .anyRequest().authenticated())
-//                .build();
-//    }
-
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/user/login").permitAll()
+                        .requestMatchers("/user/admin/login").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

@@ -21,7 +21,9 @@ expiryDuration: 900
 
 #jwt
 JWT_EXPIRATION: 432_000_000
-JWT_SECRET: awdawd
+JWT_SECRET: this-is-a-very-long-and-secret-key-for-jwt-signing-example
+
+
 
 #redis
 redis_host: localhost

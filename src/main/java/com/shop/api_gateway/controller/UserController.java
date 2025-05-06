@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -17,37 +18,49 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.shop.api_gateway.dto.enumDto.EnumResult.BAD_CREDENTIALS;
+import static com.shop.api_gateway.dto.enumDto.EnumResult.INTERNAL_SERVER_ERROR;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("/user/admin/")
 @ControllerAdvice
 public class UserController {
 
     private final UserService userService;
 
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDto loginRequestDto, HttpServletRequest request) {
         try {
-            return ResponseEntity.ok(userService.login(loginRequestDto, request.getRemoteAddr()));
-        } catch (RecordException e) {
-            return ResponseEntity.status(e.getHttpStatus()).body(e.getException());
+            return ResponseEntity.ok(userService.login(loginRequestDto, request));
+        }catch (BadCredentialsException e){
+            return ResponseEntity.badRequest().body(new ErrResponseDto(BAD_CREDENTIALS));
+        }
+        catch (RecordException ex) {
+            return new ResponseEntity<>(ex.getException(), ex.getHttpStatus());
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ErrResponseDto(INTERNAL_SERVER_ERROR));
         }
     }
 
 
-    @PostMapping("/accounts")
-    public ResponseEntity<?> createAccount(@Valid @RequestBody CreateAccountRequestDto requestDto) {
+    @PostMapping("/signUp")
+    public ResponseEntity<?> sign(@Valid @RequestBody CreateAccountRequestDto requestDto) {
         try {
             CreateAccountResponseDto responseDto = userService.createAccount(requestDto);
             return ResponseEntity.ok(responseDto);
-        } catch (RecordException e) {
-            return ResponseEntity.badRequest().body(e.getException());
+        }
+        catch (RecordException ex) {
+            return new ResponseEntity<>(ex.getException(), ex.getHttpStatus());
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().body(new ErrResponseDto(INTERNAL_SERVER_ERROR));
         }
     }
 
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity<List<ErrResponseDto>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         List<ErrResponseDto> errors = new ArrayList<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
@@ -56,6 +69,11 @@ public class UserController {
             errors.add(new ErrResponseDto(String.format("Error in field '%s': %s", fieldName, errorMessage), "400"));
         });
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    @ExceptionHandler(RecordException.class)
+    public ResponseEntity<ErrResponseDto> handleRecordException(RecordException ex) {
+        return new ResponseEntity<>(ex.getException(), ex.getHttpStatus());
     }
 
 }

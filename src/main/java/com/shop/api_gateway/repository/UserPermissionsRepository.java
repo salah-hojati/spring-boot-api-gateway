@@ -1,16 +1,21 @@
 package com.shop.api_gateway.repository;
 
-import com.shop.api_gateway.entity.permissionEnt.UserPermissionsEntity;
+import com.shop.api_gateway.entity.permissionEnt.UserServicePermissionEntity;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.UUID;
 
 @Repository
-public interface UserPermissionsRepository extends JpaRepository<UserPermissionsEntity, Long> {
+public interface UserPermissionsRepository extends JpaRepository<UserServicePermissionEntity, Long> {
 
-    List<UserPermissionsEntity> findByUserId(UUID userId);
 
-    List<UserPermissionsEntity> findByUserIdAndServiceId(UUID userId, Long serviceId);
+    @Query("SELECT u FROM UserServicePermissionEntity u " +
+            "WHERE u.user.username = :username "+
+            "AND u.endDate >= CURRENT_DATE")
+    List<UserServicePermissionEntity> findValidPermissionByUsername(@Param("username") String username);
+
+
 }
