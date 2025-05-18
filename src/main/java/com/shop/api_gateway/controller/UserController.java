@@ -15,6 +15,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ import static com.shop.api_gateway.dto.enumDto.EnumResult.INTERNAL_SERVER_ERROR;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user/admin/")
+@RequestMapping("/admin/user")
 @ControllerAdvice
 public class UserController {
 

@@ -14,6 +14,7 @@ public enum EnumResult {
     AUTHENTICATION_FAILED("Authentication failed","101"),
     BAD_CREDENTIALS("Bad credentials","400"),
     ACCOUNT_DISABLED("Account disabled","103"),
+    FALLBACK_SERVICE("Fallback Service , Service is disabled","104"),
     INTERNAL_SERVER_ERROR("Internal Server Error","500"),
 
 

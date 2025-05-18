@@ -28,5 +28,6 @@ JWT_SECRET: this-is-a-very-long-and-secret-key-for-jwt-signing-example
 #redis
 redis_host: localhost
 redis_port: 6379
+redis_username: root
 redis_password: password
 redis_database: 0

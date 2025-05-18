@@ -1,4 +1,7 @@
 spring:
+  application:
+    name: apiGateWay
+
   profiles:
     active: ${active_profile:dev}
   jackson:
@@ -64,6 +67,7 @@ spring:
     redis:
       port: ${redis_port}
       host: ${redis_host}
+      username: ${redis_username}
       password: ${redis_password}
       database: ${redis_database}
       connect-timeout: 60000
@@ -73,6 +77,32 @@ spring:
           max-idle: 8
           min-idle: 0
         shutdown-timeout: 5000
+
+
+
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: shop-route
+            uri: http://localhost:2000/shop
+            predicates:
+              - Path=/shop/**
+            filters:
+              - name: CircuitBreaker
+                args:
+                  name: shopCircuitBreaker
+                  fallbackUri: forward:/fallback/shop
+
+
+
+
+
+
+
+
+
+
 
 server:
   port: ${testcontainers_port:8080}

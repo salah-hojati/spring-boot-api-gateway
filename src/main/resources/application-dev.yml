@@ -27,5 +27,6 @@ JWT_SECRET: M2JjNTIzYTY4MjFjMmJmOTVjMDMxYzBkMjAwMzZhZjA3NjNmMWM4ZjZlNDE1OTRiNGRl
 #redis
 redis_host: localhost
 redis_port: 6379
+redis_username: root
 redis_password: password
 redis_database: 0

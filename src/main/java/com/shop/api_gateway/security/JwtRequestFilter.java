@@ -73,7 +73,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     returnFilter(response);
                     return;
                 }
-                if (permissions == null || permissions.stream().anyMatch(request.getRequestURI()::startsWith)) {
+                if (permissions == null || permissions.stream().noneMatch(request.getRequestURI()::startsWith)) {
                     returnFilter(response);
                     return;
                 }
