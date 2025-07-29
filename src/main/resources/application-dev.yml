@@ -1,9 +1,9 @@
 #Email
-email_host: smtp.gmail.com
-email_port: 587
-email_id: your_email@gmail.com
-email_password: your_password
-verify_host: http://localhost:8085
+#email_host: smtp.gmail.com
+#email_port: 587
+#email_id: your_email@gmail.com
+#email_password: your_password
+#verify_host: http://localhost:8085
 
 #Server
 active_profile: dev

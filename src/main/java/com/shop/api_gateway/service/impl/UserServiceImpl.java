@@ -34,10 +34,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.shop.api_gateway.dto.enumDto.EnumResult.*;
@@ -186,14 +183,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updatePassword(UUID userId, String password) {
-        userRepository.updatePassword(userId, passwordEncoder.encode(password));
-    }
+    public UserEntity updatePassword(String newPassword , String currentPassword) {
 
-    @Override
-    public void updateLastPasswordResetDate(UUID userId) {
-        userRepository.updateLastPasswordResetDate(userId, LocalDateTime.now());
-    }
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String createdByUsername = userDetails.getUsername();
+        UserEntity createdByUser = userRepository.findByUsername(createdByUsername).stream().findFirst().orElse(null);
 
+        if (createdByUser == null)
+            throw new RecordException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+
+        log.info("Starting password update for userId: {}", createdByUser.getUsername());
+
+        if (!passwordEncoder.matches(currentPassword, createdByUser.getPassword())) {
+            log.warn("Password mismatch for userId: {}", createdByUser.getUsername());
+            throw new RecordException(PASSWORD_IS_NOT_MACH, HttpStatus.BAD_REQUEST);
+        }
+        log.info("Password successfully updated for userId: {}", createdByUser.getUsername());
+        return userRepository.updatePassword(createdByUser.getId(), LocalDateTime.now(),passwordEncoder.encode(newPassword));
+    }
 
 }

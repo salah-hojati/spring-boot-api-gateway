@@ -31,13 +31,7 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 
     @Transactional
     @Modifying
-    @Query("UPDATE UserEntity u SET u.password = :password WHERE u.id = :userId")
-    void updatePassword(UUID userId, String password);
-
-    @Transactional
-    @Modifying
-    @Query("UPDATE UserEntity u SET u.lastPasswordResetDate = :lastPasswordResetDate WHERE u.id = :userId")
-    void updateLastPasswordResetDate(UUID userId, LocalDateTime lastPasswordResetDate);
-
+    @Query("UPDATE UserEntity u SET u.password = :password , u.lastPasswordResetDate=:lastDate WHERE u.id = :userId")
+    UserEntity updatePassword(UUID userId,LocalDateTime lastDate, String password);
 
 }

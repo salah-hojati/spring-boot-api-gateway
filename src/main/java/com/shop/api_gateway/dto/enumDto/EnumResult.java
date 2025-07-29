@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum EnumResult {
     USER_NOT_FOUND("user Not Found","100"),
     EMAIL_IS_USED("Email already in use","101"),
+    PASSWORD_IS_NOT_MACH("password is not mach","102"),
     USER_IS_USED("Username already in use","101"),
     PHONE_IS_USED("PhoneNumber already in use","101"),
     ERROR_CREATE_ACCOUNT("Error creating account","500"),

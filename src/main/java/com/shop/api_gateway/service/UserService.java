@@ -4,6 +4,7 @@ import com.shop.api_gateway.dto.LoginRequestDto;
 import com.shop.api_gateway.dto.LoginResponseDto;
 import com.shop.api_gateway.dto.profile.CreateAccountRequestDto;
 import com.shop.api_gateway.dto.profile.CreateAccountResponseDto;
+import com.shop.api_gateway.entity.UserEntity;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.UUID;
@@ -16,9 +17,8 @@ public interface UserService {
 
     void updateLastLoginInfo(UUID userId, String ipAddress);
 
-    void updatePassword(UUID userId, String password);
+    UserEntity updatePassword( String newPassword , String currentPassword);
 
-    void updateLastPasswordResetDate(UUID userId);
 
 
 }

@@ -1,10 +1,66 @@
-#services:
-#  mysql:
-#    image: 'mysql:latest'
-#    environment:
-#      - 'MYSQL_DATABASE=mydatabase'
-#      - 'MYSQL_PASSWORD=secret'
-#      - 'MYSQL_ROOT_PASSWORD=verysecret'
-#      - 'MYSQL_USER=myuser'
-#    ports:
-#      - '3306'
+version: '3.8'
+
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ${database_name}
+      MYSQL_USER: ${database_username}
+      MYSQL_PASSWORD: ${database_password}
+    ports:
+      - "${database_port}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7.0
+    container_name: redis-container
+    restart: unless-stopped
+    command: ["redis-server", "--requirepass", "${redis_password}"]
+    ports:
+      - "${redis_port}:6379"
+    networks:
+      - app-network
+
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api-gateway-container
+    restart: unless-stopped
+    ports:
+      - "${testcontainers_port}:8080"
+    environment:
+      - active_profile=${active_profile}
+      - database_host=${database_host}
+      - database_port=${database_port}
+      - database_name=${database_name}
+      - database_username=${database_username}
+      - database_password=${database_password}
+      - redis_host=${redis_host}
+      - redis_port=${redis_port}
+      - redis_username=${redis_username}
+      - redis_password=${redis_password}
+      - redis_database=${redis_database}
+      - JWT_EXPIRATION=${JWT_EXPIRATION}
+      - JWT_SECRET=${JWT_SECRET}
+      - expiryDuration=${expiryDuration}
+      - verify_host=${verify_host:-http://localhost:8085}
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - app-network
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge

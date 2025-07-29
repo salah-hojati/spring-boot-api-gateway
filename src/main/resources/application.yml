@@ -40,28 +40,28 @@ spring:
       max-file-size: 1000MB
       max-request-size: 1000MB
 
-  mail:
-    host: ${email_host}
-    port: ${email_port}
-    username: ${email_id}
-    password: ${email_password}
-    default-encoding: UTF-8
-    properties:
-      mail:
-        mime:
-          charset: UTF-8
-        smtp:
-          write-timeout: 10000
-          connection-timeout: 1000
-          timeout: 1000
-          auth: true
-          starttls:
-            enable: true
-            required: true
-    verify:
-      host: ${verify_host}
-  cache:
-    expiryDuration: ${expiryDuration}
+#  mail:
+#    host: ${email_host}
+#    port: ${email_port}
+#    username: ${email_id}
+#    password: ${email_password}
+#    default-encoding: UTF-8
+#    properties:
+#      mail:
+#        mime:
+#          charset: UTF-8
+#        smtp:
+#          write-timeout: 10000
+#          connection-timeout: 1000
+#          timeout: 1000
+#          auth: true
+#          starttls:
+#            enable: true
+#            required: true
+#    verify:
+#      host: ${verify_host}
+#  cache:
+#    expiryDuration: ${expiryDuration}
 
   data:
     redis:
@@ -78,8 +78,6 @@ spring:
           min-idle: 0
         shutdown-timeout: 5000
 
-
-
   cloud:
     gateway:
       mvc:
@@ -93,16 +91,6 @@ spring:
                 args:
                   name: shopCircuitBreaker
                   fallbackUri: forward:/fallback/shop
-
-
-
-
-
-
-
-
-
-
 
 server:
   port: ${testcontainers_port:8080}

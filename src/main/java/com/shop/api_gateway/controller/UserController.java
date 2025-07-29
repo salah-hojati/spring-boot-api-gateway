@@ -4,6 +4,7 @@ import com.shop.api_gateway.dto.ErrResponseDto;
 import com.shop.api_gateway.dto.LoginRequestDto;
 import com.shop.api_gateway.dto.profile.CreateAccountRequestDto;
 import com.shop.api_gateway.dto.profile.CreateAccountResponseDto;
+import com.shop.api_gateway.dto.profile.UpdatePasswordRequestDto;
 import com.shop.api_gateway.excepotion.RecordException;
 import com.shop.api_gateway.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,6 +60,19 @@ public class UserController {
             return ResponseEntity.badRequest().body(new ErrResponseDto(INTERNAL_SERVER_ERROR));
         }
     }
+
+    @PostMapping("/updatePassword")
+    public ResponseEntity<?> updatePassword(@Valid @RequestBody UpdatePasswordRequestDto updatePasswordRequestDto) {
+    try {
+     return ResponseEntity.ok(userService.updatePassword(updatePasswordRequestDto.newPassword(), updatePasswordRequestDto.currentPassword()));
+    }catch (RecordException ex) {
+        return new ResponseEntity<>(ex.getException(), ex.getHttpStatus());
+    }
+    catch (Exception e){
+        return ResponseEntity.badRequest().body(new ErrResponseDto(INTERNAL_SERVER_ERROR));
+    }
+    }
+
 
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
