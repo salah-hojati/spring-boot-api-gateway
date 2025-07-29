@@ -2,6 +2,7 @@ package com.shop.api_gateway.service.impl;
 
 import com.shop.api_gateway.dto.LoginRequestDto;
 import com.shop.api_gateway.dto.LoginResponseDto;
+import com.shop.api_gateway.dto.ResponseDto;
 import com.shop.api_gateway.dto.UserDto;
 import com.shop.api_gateway.dto.profile.CreateAccountRequestDto;
 import com.shop.api_gateway.dto.profile.CreateAccountResponseDto;
@@ -34,7 +35,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.shop.api_gateway.dto.enumDto.EnumResult.*;
@@ -90,7 +94,7 @@ public class UserServiceImpl implements UserService {
 
                 claims.put("jti", uuid);
                 String deviceId = (request.getHeader("User-Agent") != null) ? request.getHeader("User-Agent") : "unknown";
-                redisService.setDeviceIdForJti(uuid,deviceId);
+                redisService.setDeviceIdForJti(uuid, deviceId);
                 String token = "Bearer " + jwtUtil.generateToken(userDetails, claims);
 
                 UserDto userDto = new UserDto(user.getUsername(), user.getEmail(), user.getFirstName(), user.getLastName(), user.getLastLoginDate());
@@ -183,7 +187,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity updatePassword(String newPassword , String currentPassword) {
+    public ResponseDto updatePassword(String newPassword, String currentPassword) {
+
+        if (newPassword.equals(currentPassword))
+            throw new RecordException(BAD_REQUEST, HttpStatus.BAD_REQUEST);
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String createdByUsername = userDetails.getUsername();
@@ -199,7 +206,13 @@ public class UserServiceImpl implements UserService {
             throw new RecordException(PASSWORD_IS_NOT_MACH, HttpStatus.BAD_REQUEST);
         }
         log.info("Password successfully updated for userId: {}", createdByUser.getUsername());
-        return userRepository.updatePassword(createdByUser.getId(), LocalDateTime.now(),passwordEncoder.encode(newPassword));
+        try {
+            userRepository.updatePassword(createdByUser.getId(), LocalDateTime.now(), passwordEncoder.encode(newPassword));
+        } catch (Exception e) {
+            log.error("Error updating password for userId: {}", createdByUser.getUsername());
+            throw new RecordException(INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseDto(PASSWORD_CHANGED);
     }
 
 }

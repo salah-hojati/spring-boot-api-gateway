@@ -17,9 +17,12 @@ public enum EnumResult {
     ACCOUNT_DISABLED("Account disabled","103"),
     FALLBACK_SERVICE("Fallback Service , Service is disabled","104"),
     INTERNAL_SERVER_ERROR("Internal Server Error","500"),
+    PASSWORD_CHANGED("Password changed successfully","200"),
+    BAD_REQUEST("Bad Request","400"),
 
 
     FORBIDDEN("Forbidden","403"),
+    UNAUTHORIZED("Unauthorized","405"),
 
     ;
 

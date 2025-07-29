@@ -1,6 +1,6 @@
 package com.shop.api_gateway.controller;
 
-import com.shop.api_gateway.dto.ErrResponseDto;
+import com.shop.api_gateway.dto.ResponseDto;
 import com.shop.api_gateway.dto.LoginRequestDto;
 import com.shop.api_gateway.dto.profile.CreateAccountRequestDto;
 import com.shop.api_gateway.dto.profile.CreateAccountResponseDto;
@@ -16,7 +16,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +24,7 @@ import static com.shop.api_gateway.dto.enumDto.EnumResult.INTERNAL_SERVER_ERROR;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin/user")
+@RequestMapping("/user")
 @ControllerAdvice
 public class UserController {
 
@@ -35,14 +34,12 @@ public class UserController {
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDto loginRequestDto, HttpServletRequest request) {
         try {
             return ResponseEntity.ok(userService.login(loginRequestDto, request));
-        }catch (BadCredentialsException e){
-            return ResponseEntity.badRequest().body(new ErrResponseDto(BAD_CREDENTIALS));
-        }
-        catch (RecordException ex) {
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.badRequest().body(new ResponseDto(BAD_CREDENTIALS));
+        } catch (RecordException ex) {
             return new ResponseEntity<>(ex.getException(), ex.getHttpStatus());
-        }
-        catch (Exception e) {
-            return ResponseEntity.badRequest().body(new ErrResponseDto(INTERNAL_SERVER_ERROR));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResponseDto(INTERNAL_SERVER_ERROR));
         }
     }
 
@@ -52,42 +49,38 @@ public class UserController {
         try {
             CreateAccountResponseDto responseDto = userService.createAccount(requestDto);
             return ResponseEntity.ok(responseDto);
-        }
-        catch (RecordException ex) {
+        } catch (RecordException ex) {
             return new ResponseEntity<>(ex.getException(), ex.getHttpStatus());
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest().body(new ErrResponseDto(INTERNAL_SERVER_ERROR));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResponseDto(INTERNAL_SERVER_ERROR));
         }
     }
 
     @PostMapping("/updatePassword")
     public ResponseEntity<?> updatePassword(@Valid @RequestBody UpdatePasswordRequestDto updatePasswordRequestDto) {
-    try {
-     return ResponseEntity.ok(userService.updatePassword(updatePasswordRequestDto.newPassword(), updatePasswordRequestDto.currentPassword()));
-    }catch (RecordException ex) {
-        return new ResponseEntity<>(ex.getException(), ex.getHttpStatus());
+        try {
+            return ResponseEntity.ok(userService.updatePassword(updatePasswordRequestDto.newPassword(), updatePasswordRequestDto.currentPassword()));
+        } catch (RecordException ex) {
+            return new ResponseEntity<>(ex.getException(), ex.getHttpStatus());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResponseDto(INTERNAL_SERVER_ERROR));
+        }
     }
-    catch (Exception e){
-        return ResponseEntity.badRequest().body(new ErrResponseDto(INTERNAL_SERVER_ERROR));
-    }
-    }
-
 
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
-    public ResponseEntity<List<ErrResponseDto>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        List<ErrResponseDto> errors = new ArrayList<>();
+    public ResponseEntity<List<ResponseDto>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        List<ResponseDto> errors = new ArrayList<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
-            errors.add(new ErrResponseDto(String.format("Error in field '%s': %s", fieldName, errorMessage), "400"));
+            errors.add(new ResponseDto(String.format("Error in field '%s': %s", fieldName, errorMessage), "400"));
         });
         return ResponseEntity.badRequest().body(errors);
     }
 
     @ExceptionHandler(RecordException.class)
-    public ResponseEntity<ErrResponseDto> handleRecordException(RecordException ex) {
+    public ResponseEntity<ResponseDto> handleRecordException(RecordException ex) {
         return new ResponseEntity<>(ex.getException(), ex.getHttpStatus());
     }
 

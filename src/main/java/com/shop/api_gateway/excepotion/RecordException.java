@@ -1,6 +1,6 @@
 package com.shop.api_gateway.excepotion;
 
-import com.shop.api_gateway.dto.ErrResponseDto;
+import com.shop.api_gateway.dto.ResponseDto;
 import com.shop.api_gateway.dto.enumDto.EnumResult;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -26,8 +26,8 @@ public class RecordException extends RuntimeException {
         this.httpStatus = httpStatus;
     }
 
-    public ErrResponseDto getException() {
-        return new ErrResponseDto(code, message);
+    public ResponseDto getException() {
+        return new ResponseDto(code, message);
     }
 
 }

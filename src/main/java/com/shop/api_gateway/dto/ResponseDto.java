@@ -2,13 +2,13 @@ package com.shop.api_gateway.dto;
 
 import com.shop.api_gateway.dto.enumDto.EnumResult;
 
-public record ErrResponseDto(String message, String code) {
+public record ResponseDto(String message, String code) {
 
-    public ErrResponseDto(EnumResult enumResult){
+    public ResponseDto(EnumResult enumResult){
         this(enumResult.getMessage(), enumResult.getCode());
     }
 
-    public ErrResponseDto(String message, String code) {
+    public ResponseDto(String message, String code) {
         this.message = message;
         this.code = code;
     }

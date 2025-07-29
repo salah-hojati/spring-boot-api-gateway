@@ -1,7 +1,7 @@
 package com.shop.api_gateway.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shop.api_gateway.dto.ErrResponseDto;
+import com.shop.api_gateway.dto.ResponseDto;
 import com.shop.api_gateway.dto.enumDto.EnumResult;
 import com.shop.api_gateway.service.impl.RedisService;
 import com.shop.api_gateway.service.impl.UserDetailsServiceImpl;
@@ -74,7 +74,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     return;
                 }
                 if (permissions == null || permissions.stream().noneMatch(request.getRequestURI()::startsWith)) {
-                    returnFilter(response);
+                    //TODO log Security
+                    returnGrantedFilter(response);
                     return;
                 }
 
@@ -95,7 +96,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private void returnFilter(HttpServletResponse response) throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.FORBIDDEN.value());
-        ErrResponseDto errorResponse = new ErrResponseDto(EnumResult.FORBIDDEN);
+        ResponseDto errorResponse = new ResponseDto(EnumResult.FORBIDDEN);
+        objectMapper.writeValue(response.getWriter(), errorResponse);
+    }
+
+    private void returnGrantedFilter(HttpServletResponse response) throws IOException {
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        ResponseDto errorResponse = new ResponseDto(EnumResult.UNAUTHORIZED);
         objectMapper.writeValue(response.getWriter(), errorResponse);
     }
 }
