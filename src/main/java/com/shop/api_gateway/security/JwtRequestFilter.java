@@ -73,7 +73,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     returnFilter(response);
                     return;
                 }
-                if (permissions == null || permissions.stream().noneMatch(request.getRequestURI()::startsWith)) {
+
+                String args[] = request.getRequestURI().split("/");
+                String path = "/"+args[1]+"/"+args[2];
+                if (permissions == null || permissions.stream().noneMatch(path::equalsIgnoreCase)) {
                     //TODO log Security
                     returnGrantedFilter(response);
                     return;
