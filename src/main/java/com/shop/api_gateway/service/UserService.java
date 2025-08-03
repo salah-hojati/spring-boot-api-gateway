@@ -19,5 +19,7 @@ public interface UserService {
 
     ResponseDto updatePassword(String newPassword, String currentPassword);
 
+    ResponseDto forgotPassword(String contact);
+
 
 }

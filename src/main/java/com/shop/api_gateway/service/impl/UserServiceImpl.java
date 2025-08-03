@@ -20,6 +20,7 @@ import com.shop.api_gateway.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -57,6 +58,9 @@ public class UserServiceImpl implements UserService {
     private final UserPermissionsRepository userPermissionsRepository;
     private final RedisService redisService;
     private final JwtUtil jwtUtil;
+    private final ApplicationEventPublisher publisher;
+
+
 
     @Override
     public LoginResponseDto login(LoginRequestDto loginRequestDto, HttpServletRequest request) {
@@ -215,4 +219,9 @@ public class UserServiceImpl implements UserService {
         return new ResponseDto(PASSWORD_CHANGED);
     }
 
+    @Override
+    public ResponseDto forgotPassword(String contact) {
+
+        return null;
+    }
 }
