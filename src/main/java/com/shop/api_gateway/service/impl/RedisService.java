@@ -128,8 +128,7 @@ public class RedisService {
     public boolean getForgetPasswordAttempts(String  key) {
         try {
             String value = stringRedisTemplate.opsForValue().get(key);
-            assert value != null;
-            return !value.isEmpty();
+            return value != null;
         } catch (Exception e) {
             log.error("Error getting GetForgetPasswordAttempts from Redis: {}", e.getMessage());
             return false;
