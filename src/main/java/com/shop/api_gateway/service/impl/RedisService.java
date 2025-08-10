@@ -112,58 +112,16 @@ public class RedisService {
     }
 
 
-
-    public void forgetPasswordAttempts(String key) {
+    public boolean forgetPasswordAttempts(String key) {
         try {
             if (stringRedisTemplate.opsForValue().get(key) == null) {
-                stringRedisTemplate.opsForValue().set(key, Boolean.TRUE.toString());
+                stringRedisTemplate.opsForValue().set(key, "Locked ResetPassword");
                 stringRedisTemplate.expire(key, 2, TimeUnit.MINUTES);
+                return false;
             }
+            return true;
         } catch (Exception e) {
             log.error("Error incrementing ForgetPasswordAttempts in Redis: {}", e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
-
-    public boolean getForgetPasswordAttempts(String  key) {
-        try {
-            String value = stringRedisTemplate.opsForValue().get(key);
-            return value != null;
-        } catch (Exception e) {
-            log.error("Error getting GetForgetPasswordAttempts from Redis: {}", e.getMessage());
-            return false;
-        }
-    }
-
-
-    public void SuccessIDJti(String key) {
-        try {
-            if (integerRedisTemplate.opsForValue().get(key) == null) {
-                integerRedisTemplate.opsForValue().set(key, 0);
-            }
-            integerRedisTemplate.opsForValue().increment(key);
-            integerRedisTemplate.expire(key, expiration, TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
-            log.error("Error incrementing SuccessIDJti in Redis: {}", e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Integer SuccessIDJtiAttempts(String key) {
-        try {
-            Integer attempts = integerRedisTemplate.opsForValue().get(key);
-            return attempts != null ? attempts : 0;
-        } catch (Exception e) {
-            log.error("Error getting ForgetPasswordAttempts from Redis: {}", e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void resetSuccessIDJtiAttempts(String key) {
-        try {
-            integerRedisTemplate.delete(key);
-        } catch (Exception e) {
-            log.error("Error resetting ForgetPasswordAttempts in Redis: {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }

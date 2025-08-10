@@ -224,9 +224,8 @@ public class UserServiceImpl implements UserService {
             if (user == null)
                 throw new RecordException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
 
-            if (redisService.getForgetPasswordAttempts(user.getId().toString()))
+            if (redisService.forgetPasswordAttempts(user.getId().toString()))
                 throw new RecordException(LOCK_ACCOUNT, HttpStatus.LOCKED);
-            redisService.forgetPasswordAttempts(user.getId().toString());
 
             ConfirmationEntity confirmationEntity = new ConfirmationEntity(user);
             confirmationRepository.save(confirmationEntity);
