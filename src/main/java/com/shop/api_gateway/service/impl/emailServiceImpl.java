@@ -37,7 +37,7 @@ public class emailServiceImpl implements NotificationService {
             message.setSubject(REST_PASSWORD_REQUEST);
             message.setFrom(fromEmail);
             message.setTo(contact);
-            message.setText(getResetPasswordMessage(name, host, token));
+            message.setText(getResetPasswordMessage(name, host+"/"+ token));
             sender.send(message);
         } catch (Exception e) {
             log.error("Failed to send sendPasswordRestEmail email to: {}. Error: {}", contact, e.getMessage(), e);

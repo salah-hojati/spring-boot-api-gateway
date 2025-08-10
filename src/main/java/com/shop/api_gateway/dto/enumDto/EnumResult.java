@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum EnumResult {
+    OK("OK","200"),
     USER_NOT_FOUND("user Not Found","100"),
     EMAIL_IS_USED("Email already in use","101"),
     PASSWORD_IS_NOT_MACH("password is not mach","102"),
@@ -19,6 +20,9 @@ public enum EnumResult {
     INTERNAL_SERVER_ERROR("Internal Server Error","500"),
     PASSWORD_CHANGED("Password changed successfully","200"),
     BAD_REQUEST("Bad Request","400"),
+    TOKEN_NOT_FOUNT("Token not found","401"),
+    CHANGED_PASSWORD("your password is changed","202"),
+    LOCK_ACCOUNT("Lock Account","406"),
 
 
     FORBIDDEN("Forbidden","403"),

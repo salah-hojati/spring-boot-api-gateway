@@ -1,4 +1,4 @@
-package com.shop.api_gateway.entity.permissionEnt;
+package com.shop.api_gateway.entity.permission;
 
 
 import jakarta.persistence.*;

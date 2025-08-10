@@ -1,20 +1,16 @@
 package com.shop.api_gateway.service.impl;
 
-import com.shop.api_gateway.dto.LoginRequestDto;
-import com.shop.api_gateway.dto.LoginResponseDto;
-import com.shop.api_gateway.dto.ResponseDto;
-import com.shop.api_gateway.dto.UserDto;
+import com.shop.api_gateway.dto.*;
+import com.shop.api_gateway.dto.enumDto.EventType;
 import com.shop.api_gateway.dto.profile.CreateAccountRequestDto;
 import com.shop.api_gateway.dto.profile.CreateAccountResponseDto;
 import com.shop.api_gateway.entity.UserEntity;
 import com.shop.api_gateway.entity.UserSecurityEntity;
-import com.shop.api_gateway.entity.permissionEnt.UserServicePermissionEntity;
+import com.shop.api_gateway.entity.permission.UserServicePermissionEntity;
+import com.shop.api_gateway.entity.profile.ConfirmationEntity;
 import com.shop.api_gateway.entity.profile.UserProfileEntity;
 import com.shop.api_gateway.excepotion.RecordException;
-import com.shop.api_gateway.repository.UserPermissionsRepository;
-import com.shop.api_gateway.repository.UserProfileRepository;
-import com.shop.api_gateway.repository.UserRepository;
-import com.shop.api_gateway.repository.UserSecurityRepository;
+import com.shop.api_gateway.repository.*;
 import com.shop.api_gateway.service.UserService;
 import com.shop.api_gateway.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,7 +55,7 @@ public class UserServiceImpl implements UserService {
     private final RedisService redisService;
     private final JwtUtil jwtUtil;
     private final ApplicationEventPublisher publisher;
-
+    private final ConfirmationRepository confirmationRepository;
 
 
     @Override
@@ -99,6 +95,7 @@ public class UserServiceImpl implements UserService {
                 claims.put("jti", uuid);
                 String deviceId = (request.getHeader("User-Agent") != null) ? request.getHeader("User-Agent") : "unknown";
                 redisService.setDeviceIdForJti(uuid, deviceId);
+                redisService.setIdLogin(uuid, user.getId().toString());
                 String token = "Bearer " + jwtUtil.generateToken(userDetails, claims);
 
                 UserDto userDto = new UserDto(user.getUsername(), user.getEmail(), user.getFirstName(), user.getLastName(), user.getLastLoginDate());
@@ -213,6 +210,7 @@ public class UserServiceImpl implements UserService {
         try {
             userRepository.updatePassword(createdByUser.getId(), LocalDateTime.now(), passwordEncoder.encode(newPassword));
         } catch (Exception e) {
+            if (e instanceof RecordException) throw e;
             log.error("Error updating password for userId: {}", createdByUser.getUsername());
             throw new RecordException(INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -221,7 +219,42 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseDto forgotPassword(String contact) {
+        try {
+            UserEntity user = userRepository.findByEmailOrPhoneNumber(contact, contact).stream().findFirst().orElse(null);
+            if (user == null)
+                throw new RecordException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
 
-        return null;
+            if (redisService.getForgetPasswordAttempts(user.getId().toString()))
+                throw new RecordException(LOCK_ACCOUNT, HttpStatus.LOCKED);
+            redisService.forgetPasswordAttempts(user.getId().toString());
+
+            ConfirmationEntity confirmationEntity = new ConfirmationEntity(user);
+            confirmationRepository.save(confirmationEntity);
+            publisher.publishEvent(new UserEventDto(user, EventType.REGISTRATION, Map.of("key", confirmationEntity.getKey())));
+
+            log.warn(confirmationEntity.getKey()); //TODO delete this code in real APPs
+            return new ResponseDto(OK);
+        } catch (Exception e) {
+            if (e instanceof RecordException) throw e;
+            log.error("Error forgot password for userId: {}", contact);
+            throw new RecordException(INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @Override
+    public ResponseDto resetPassword(String token, String newPassword) {
+        try {
+            ConfirmationEntity confirmationEntity = confirmationRepository.findByKey(token).stream().findFirst().orElse(null);
+            if (confirmationEntity == null) throw new RecordException(TOKEN_NOT_FOUNT, HttpStatus.NOT_FOUND);
+            confirmationEntity.getUserEntity().setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(confirmationEntity.getUserEntity());
+            confirmationRepository.delete(confirmationEntity);
+            return new ResponseDto(CHANGED_PASSWORD);
+        } catch (Exception e) {
+            if (e instanceof RecordException) throw e;
+            log.error("Error resetPassword for userId: {}", token);
+            throw new RecordException(INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

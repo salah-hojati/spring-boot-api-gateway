@@ -21,5 +21,7 @@ public interface UserService {
 
     ResponseDto forgotPassword(String contact);
 
+    ResponseDto resetPassword(String token ,  String newPassword);
+
 
 }

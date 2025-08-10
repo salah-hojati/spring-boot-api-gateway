@@ -67,6 +67,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 Claims claims = jwtUtil.extractAllClaims(jwt);
                 List<String> permissions = (List<String>) claims.get("permissions");
                 String jti = (claims.get("jti").toString() == null) ? null : claims.get("jti").toString();
+
+               if(redisService.getIdLogin(claims.get("jti").toString()) == null){
+                   returnFilter(response);
+                   return;
+               }
+
                 String getJwi = (redisService.getDeviceIdForJti(claims.get("jti").toString()) == null) ? null : redisService.getDeviceIdForJti(claims.get("jti").toString());
 
                 if (jti == null || getJwi == null || !getJwi.equalsIgnoreCase(request.getHeader("User-Agent"))) {

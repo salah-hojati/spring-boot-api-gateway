@@ -81,4 +81,92 @@ public class RedisService {
         }
     }
 
+
+    public void setIdLogin(String jti, String userId) {
+        try {
+            stringRedisTemplate.opsForValue().set(jti, userId);
+            stringRedisTemplate.expire(jti, expiration, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            log.error("Error setIdLogin  in Redis: {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getIdLogin(String jti) {
+        try {
+            return stringRedisTemplate.opsForValue().get(jti);
+        } catch (Exception e) {
+            if (e instanceof NullPointerException) return null;
+            log.error("Error getting IdLogin for jti from Redis: {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void deleteIdLogin(String jti) {  //TODO when change permission user should delete id
+        try {
+            stringRedisTemplate.delete(jti);
+        } catch (Exception e) {
+            log.error("Error deleting IdLogin for jti in Redis: {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
+    public void forgetPasswordAttempts(String key) {
+        try {
+            if (stringRedisTemplate.opsForValue().get(key) == null) {
+                stringRedisTemplate.opsForValue().set(key, Boolean.TRUE.toString());
+                stringRedisTemplate.expire(key, 2, TimeUnit.MINUTES);
+            }
+        } catch (Exception e) {
+            log.error("Error incrementing ForgetPasswordAttempts in Redis: {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean getForgetPasswordAttempts(String  key) {
+        try {
+            String value = stringRedisTemplate.opsForValue().get(key);
+            assert value != null;
+            return !value.isEmpty();
+        } catch (Exception e) {
+            log.error("Error getting GetForgetPasswordAttempts from Redis: {}", e.getMessage());
+            return false;
+        }
+    }
+
+
+    public void SuccessIDJti(String key) {
+        try {
+            if (integerRedisTemplate.opsForValue().get(key) == null) {
+                integerRedisTemplate.opsForValue().set(key, 0);
+            }
+            integerRedisTemplate.opsForValue().increment(key);
+            integerRedisTemplate.expire(key, expiration, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            log.error("Error incrementing SuccessIDJti in Redis: {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Integer SuccessIDJtiAttempts(String key) {
+        try {
+            Integer attempts = integerRedisTemplate.opsForValue().get(key);
+            return attempts != null ? attempts : 0;
+        } catch (Exception e) {
+            log.error("Error getting ForgetPasswordAttempts from Redis: {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void resetSuccessIDJtiAttempts(String key) {
+        try {
+            integerRedisTemplate.delete(key);
+        } catch (Exception e) {
+            log.error("Error resetting ForgetPasswordAttempts in Redis: {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
 }

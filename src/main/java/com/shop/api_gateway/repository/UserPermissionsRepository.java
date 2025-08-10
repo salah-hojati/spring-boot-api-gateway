@@ -1,6 +1,6 @@
 package com.shop.api_gateway.repository;
 
-import com.shop.api_gateway.entity.permissionEnt.UserServicePermissionEntity;
+import com.shop.api_gateway.entity.permission.UserServicePermissionEntity;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

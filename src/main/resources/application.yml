@@ -3,7 +3,7 @@ spring:
     name: apiGateWay
 
   profiles:
-    active: ${active_profile:dev}
+    active: ${active_profile:prod}
   jackson:
     default-property-inclusion: non_null
     serialization:
@@ -88,7 +88,7 @@ spring:
               - name: CircuitBreaker
                 args:
                   name: shopCircuitBreaker
-                  fallbackUri: forward:/fallback/shop
+                  fallbackUri: forward:/fallback
 
 server:
   port: ${testcontainers_port:8080}

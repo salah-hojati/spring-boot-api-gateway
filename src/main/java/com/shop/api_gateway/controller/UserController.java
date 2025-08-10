@@ -2,9 +2,7 @@ package com.shop.api_gateway.controller;
 
 import com.shop.api_gateway.dto.ResponseDto;
 import com.shop.api_gateway.dto.LoginRequestDto;
-import com.shop.api_gateway.dto.profile.CreateAccountRequestDto;
-import com.shop.api_gateway.dto.profile.CreateAccountResponseDto;
-import com.shop.api_gateway.dto.profile.UpdatePasswordRequestDto;
+import com.shop.api_gateway.dto.profile.*;
 import com.shop.api_gateway.excepotion.RecordException;
 import com.shop.api_gateway.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -60,6 +58,28 @@ public class UserController {
     public ResponseEntity<?> updatePassword(@Valid @RequestBody UpdatePasswordRequestDto updatePasswordRequestDto) {
         try {
             return ResponseEntity.ok(userService.updatePassword(updatePasswordRequestDto.newPassword(), updatePasswordRequestDto.currentPassword()));
+        } catch (RecordException ex) {
+            return new ResponseEntity<>(ex.getException(), ex.getHttpStatus());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResponseDto(INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    @PostMapping("/forgetPassword")
+    public ResponseEntity<?> forgetPassword(@Valid @RequestBody ForgetPasswordRequestDto forgetPasswordRequestDto) {
+        try {
+            return ResponseEntity.ok(userService.forgotPassword(forgetPasswordRequestDto.contact()));
+        } catch (RecordException ex) {
+            return new ResponseEntity<>(ex.getException(), ex.getHttpStatus());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResponseDto(INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    @PostMapping("/resetPassword")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequestDto resetPasswordRequestDto) {
+        try {
+            return ResponseEntity.ok(userService.resetPassword(resetPasswordRequestDto.token(), resetPasswordRequestDto.newPassword()));
         } catch (RecordException ex) {
             return new ResponseEntity<>(ex.getException(), ex.getHttpStatus());
         } catch (Exception e) {

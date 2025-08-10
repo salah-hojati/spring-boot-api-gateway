@@ -1,7 +1,7 @@
 package com.shop.api_gateway.service.impl;
 
 import com.shop.api_gateway.entity.UserEntity;
-import com.shop.api_gateway.entity.permissionEnt.UserServicePermissionEntity;
+import com.shop.api_gateway.entity.permission.UserServicePermissionEntity;
 import com.shop.api_gateway.repository.UserPermissionsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
