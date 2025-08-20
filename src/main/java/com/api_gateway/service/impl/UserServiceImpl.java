@@ -149,7 +149,7 @@ public class UserServiceImpl implements UserService {
             newUser.setEmail(requestDto.email());
             newUser.setFirstName(requestDto.firstName());
             newUser.setLastName(requestDto.lastName());
-            newUser.setCreatedBy(createdByUser.getId());
+            newUser.setManager(createdByUser);
             newUser.setEnabled(true);
             newUser.setCreatedDate(LocalDateTime.now());
             newUser.setLastPasswordResetDate(LocalDateTime.now());
@@ -166,8 +166,8 @@ public class UserServiceImpl implements UserService {
 
             UserServicePermissionEntity userServicePermissionEntity = new UserServicePermissionEntity();
             userServicePermissionEntity.setUser(newUser);
-            //can handle Expire Date
-            // TODO
+
+
             userServicePermissionEntity.setEndDate(LocalDateTime.now().plusYears(1L));
             userServicePermissionEntity.setGrantedBy(createdByUser.getId());
             userPermissionsRepository.save(userServicePermissionEntity);
