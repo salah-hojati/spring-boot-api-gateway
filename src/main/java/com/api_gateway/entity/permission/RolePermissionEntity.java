@@ -1,10 +1,13 @@
 package com.api_gateway.entity.permission;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "role_permissions")
 public class RolePermissionEntity implements Serializable {

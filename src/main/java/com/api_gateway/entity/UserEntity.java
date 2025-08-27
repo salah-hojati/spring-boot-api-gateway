@@ -3,7 +3,8 @@ package com.api_gateway.entity;
 
 import com.api_gateway.entity.permission.UserRoleEntity;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -11,7 +12,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 public class UserEntity implements Serializable {
@@ -20,7 +22,7 @@ public class UserEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, unique = true, length = 100 , updatable = false)
+    @Column(nullable = false, unique = true, length = 100, updatable = false)
     private String username;
 
     @Column(nullable = false)
@@ -35,7 +37,7 @@ public class UserEntity implements Serializable {
     @Column(nullable = false, length = 100)
     private String lastName;
 
-    @Column(length = 10 , unique = true)
+    @Column(length = 10, unique = true)
     private String phoneNumber;
 
     @Column
@@ -65,8 +67,7 @@ public class UserEntity implements Serializable {
     private Set<UserEntity> subordinates = new HashSet<>();
 
 
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<UserRoleEntity> userRoles = new HashSet<>();
 
 }

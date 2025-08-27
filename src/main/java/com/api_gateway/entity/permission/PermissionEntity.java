@@ -2,13 +2,15 @@ package com.api_gateway.entity.permission;
 
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "permissions")
 public class PermissionEntity implements Serializable {
@@ -19,7 +21,7 @@ public class PermissionEntity implements Serializable {
     @Column(nullable = false, unique = true, length = 50)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "service_id")
     private ServiceEntity serviceEntity;
 

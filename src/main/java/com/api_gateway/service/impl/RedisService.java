@@ -62,25 +62,6 @@ public class RedisService {
         }
     }
 
-    public String getDeviceIdForJti(String jti) {
-        try {
-            return stringRedisTemplate.opsForValue().get(jti);
-        } catch (Exception e) {
-            if (e instanceof NullPointerException) return null;
-            log.error("Error getting device ID for jti from Redis: {}", e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void deleteDeviceIdForJti(String jti) {
-        try {
-            stringRedisTemplate.delete(jti);
-        } catch (Exception e) {
-            log.error("Error deleting device ID for jti in Redis: {}", e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
-
 
     public void setIdLogin(String jti, String userId) {
         try {

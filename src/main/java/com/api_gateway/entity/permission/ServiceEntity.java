@@ -1,9 +1,11 @@
 package com.api_gateway.entity.permission;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "services")
 public class ServiceEntity {

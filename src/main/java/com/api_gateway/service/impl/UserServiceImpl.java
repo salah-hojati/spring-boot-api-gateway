@@ -6,13 +6,13 @@ import com.api_gateway.dto.profile.CreateAccountRequestDto;
 import com.api_gateway.dto.profile.CreateAccountResponseDto;
 import com.api_gateway.entity.UserEntity;
 import com.api_gateway.entity.UserSecurityEntity;
-import com.api_gateway.entity.permission.UserServicePermissionEntity;
 import com.api_gateway.entity.profile.ConfirmationEntity;
 import com.api_gateway.entity.profile.UserProfileEntity;
 import com.api_gateway.excepotion.RecordException;
 import com.api_gateway.repository.*;
 import com.api_gateway.service.UserService;
 import com.api_gateway.utils.JwtUtil;
+import com.api_gateway.utils.UserServiceUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +51,6 @@ public class UserServiceImpl implements UserService {
     private final UserProfileRepository userProfileRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final UserPermissionsRepository userPermissionsRepository;
     private final RedisService redisService;
     private final JwtUtil jwtUtil;
     private final ApplicationEventPublisher publisher;
@@ -89,16 +88,16 @@ public class UserServiceImpl implements UserService {
                         .collect(Collectors.toList());
                 UserEntity user = userRepository.findByUsername(loginRequestDto.username()).get();
 
+
+
                 claims.put("permissions", permissions);
                 String uuid = UUID.randomUUID().toString();
 
                 claims.put("jti", uuid);
-                String deviceId = (request.getHeader("User-Agent") != null) ? request.getHeader("User-Agent") : "unknown";
-                redisService.setDeviceIdForJti(uuid, deviceId);
                 redisService.setIdLogin(uuid, user.getId().toString());
                 String token = "Bearer " + jwtUtil.generateToken(userDetails, claims);
 
-                UserDto userDto = new UserDto(user.getUsername(), user.getEmail(), user.getFirstName(), user.getLastName(), user.getLastLoginDate(), permissions);
+                UserDto userDto = new UserDto(user.getUsername(), user.getEmail(), user.getFirstName(), user.getLastName(), user.getLastLoginDate(), UserServiceUtil.createRolePermissionMap(permissions));
                 updateLastLoginInfo(user.getId(), request.getRemoteAddr());
                 redisService.resetFailedAttempts(redisKey);
                 return new LoginResponseDto(token, userDto);
@@ -164,13 +163,6 @@ public class UserServiceImpl implements UserService {
             userSecurity.setUserId(newUser.getId());
             userSecurity.setSalt("salt");
 
-            UserServicePermissionEntity userServicePermissionEntity = new UserServicePermissionEntity();
-            userServicePermissionEntity.setUser(newUser);
-
-
-            userServicePermissionEntity.setEndDate(LocalDateTime.now().plusYears(1L));
-            userServicePermissionEntity.setGrantedBy(createdByUser.getId());
-            userPermissionsRepository.save(userServicePermissionEntity);
 
             userProfileRepository.save(userProfileEntity);
             userSecurityRepository.save(userSecurity);
