@@ -20,7 +20,7 @@ spring:
    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: false
     open-in-view: false
     properties:
@@ -100,3 +100,11 @@ server:
 jwt:
   expiration: ${JWT_EXPIRATION}
   secret: ${JWT_SECRET}
+
+
+springdoc:
+  api-docs:
+    enabled: ${DocEnable}
+    path: /swagger
+  swagger-ui:
+    path: /swagger-ui

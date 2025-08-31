@@ -30,3 +30,6 @@ redis_port: 6379
 redis_username: root
 redis_password: password
 redis_database: 0
+
+#doc
+DocEnable: true
